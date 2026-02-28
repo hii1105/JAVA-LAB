@@ -9,6 +9,8 @@
 //b) списки студентов для каждого факультета и курса;
 //c) список студентов, родившихся после заданного года;
 //d) список учебной группы
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 class Student {
@@ -24,29 +26,11 @@ class Student {
     private String group;
     //конструкторы
     public Student() {
-        this.id = 0;
-        this.lastName = "";
-        this.firstName = "";
-        this.patronymic = "";
-        this.birthYear = 2000;
-        this.address = "";
-        this.phone = "";
-        this.faculty = "";
-        this.course = 1;
-        this.group = "";
+        this(0, "", "", "", 2000, "", "", "", 1, "");
     }
 
     public Student(int id, String lastName, String firstName, String patronymic) {
-        this.id = id;
-        this.lastName = lastName;
-        this.firstName = firstName;
-        this.patronymic = patronymic;
-        this.birthYear = 2000;
-        this.address = "";
-        this.phone = "";
-        this.faculty = "";
-        this.course = 1;
-        this.group = "";
+        this(id, lastName, firstName, patronymic, 2000, "", "", "", 1, "");
     }
 
     public Student(int id, String lastName, String firstName, String patronymic,
@@ -69,160 +53,129 @@ class Student {
     public void setFirstName(String firstName) { this.firstName = firstName; }
     public void setPatronymic(String patronymic) { this.patronymic = patronymic; }
     public void setBirthYear(int birthYear) { this.birthYear = birthYear; }
-    public void setAddress(String address) { this.address = address; }
-    public void setPhone(String phone) { this.phone = phone; }
+    public void setAddress(String address) {this.address = address; }
+    public void setPhone(String phone) {this.phone = phone; }
     public void setFaculty(String faculty) { this.faculty = faculty; }
     public void setCourse(int course) { this.course = course; }
     public void setGroup(String group) { this.group = group; }
     //get
     public int getId() { return id; }
-    public String getLastName() { return lastName; }
-    public String getFirstName() { return firstName; }
-    public String getPatronymic() { return patronymic; }
+    public String getFullName() {
+        return lastName + " " + firstName + " " + patronymic;
+    }
     public int getBirthYear() { return birthYear; }
     public String getAddress() { return address; }
     public String getPhone() { return phone; }
     public String getFaculty() { return faculty; }
     public int getCourse() { return course; }
     public String getGroup() { return group; }
-    //toString
+
+    @Override
     public String toString() {
-        return id + " " + lastName + " " + firstName + " " + patronymic +
-                " " + birthYear + " " + faculty + " " + course + " " + group;
+        return String.format("id: %d , %s , %d г.р. , %s , %d курс , %s , тел:%s , адрес:%s",
+                id, getFullName(), birthYear, faculty, course, group, phone, address);
     }
 }
 
 class StudentManager {
-    private Student[] students;
-    private int count;
+    private List<Student> students = new ArrayList<>();
 
-    public StudentManager(int size) {
-        students = new Student[size];
-        count = 0;
-    }
+    public void addStudent(Student s) { students.add(s); }
 
-    public void addStudent(Student s) {
-        if (count < students.length) {
-            students[count] = s;
-            count++;
-        }
+    private void printStudentFullInfo(Student s) {
+        System.out.println("  ID: " + s.getId());
+        System.out.println("  ФИО: " + s.getFullName());
+        System.out.println("  Год рождения: " + s.getBirthYear());
+        System.out.println("  Факультет: " + s.getFaculty());
+        System.out.println("  Курс: " + s.getCourse());
+        System.out.println("  Группа: " + s.getGroup());
+        System.out.println("  Телефон: " + s.getPhone());
+        System.out.println("  Адрес: " + s.getAddress());
     }
 
     // a) список студентов заданного факультета
     public void printByFaculty(String faculty) {
         System.out.println("\nСтуденты факультета: " + faculty);
-        boolean found = false;
-        for (int i = 0; i < count; i++) {
-            if (students[i].getFaculty().equalsIgnoreCase(faculty)) {
-                System.out.println("  " + students[i].getLastName() + " " +
-                        students[i].getFirstName() + " (" + students[i].getGroup() + ")");
-                found = true;
-            }
-        }
-        if (!found) {
+        List<Student> filtered = students.stream()
+                .filter(s -> s.getFaculty().equalsIgnoreCase(faculty)).toList();
+
+        if (filtered.isEmpty()) {
             System.out.println("  Студенты не найдены");
+            return;
         }
+        filtered.forEach(s -> System.out.println(s));
     }
 
     // b) списки студентов для каждого факультета и курса
     public void printByFacultyAndCourse() {
-        System.out.println("\nСтуденты по факультетам и курсам: ");
+        System.out.println("\nСтуденты по факультетам и курсам:");
 
-        String[] faculties = new String[count];
-        int facCount = 0;
-        for (int i = 0; i < count; i++) {
-            String f = students[i].getFaculty();
-            boolean exists = false;
-            for (int j = 0; j < facCount; j++) {
-                if (faculties[j].equals(f)) {
-                    exists = true;
-                    break;
-                }
-            }
-            if (!exists) {
-                faculties[facCount] = f;
-                facCount++;
-            }
-        }
-
-        for (int i = 0; i < facCount; i++) {
-            System.out.println("Факультет " + faculties[i] + ":");
+        students.stream().map(Student::getFaculty).distinct().forEach(fac -> {
+            System.out.println("\nФакультет: " + fac);
 
             for (int course = 1; course <= 4; course++) {
-                boolean hasStudents = false;
-                System.out.print("Курс " + course + ": ");
-                for (int j = 0; j < count; j++) {
-                    if (students[j].getFaculty().equals(faculties[i]) &&
-                            students[j].getCourse() == course) {
-                        System.out.print(students[j].getLastName() + " ");
-                        hasStudents = true;
-                    }
+                int c = course;
+                List<Student> filtered = students.stream()
+                        .filter(s -> s.getFaculty().equals(fac) && s.getCourse() == c).toList();
+
+                if (!filtered.isEmpty()) {
+                    System.out.println("  Курс " + course + " (" + filtered.size() + " студентов):");
+                    filtered.forEach(s -> System.out.println("    • " + s.getFullName() +
+                            " (гр." + s.getGroup()));
                 }
-                if (!hasStudents) {
-                    System.out.print("нет студентов");
-                }
-                System.out.println();
             }
-        }
+        });
     }
 
     // c) список студентов, родившихся после заданного года
     public void printBornAfter(int year) {
         System.out.println("\nСтуденты, родившиеся после " + year + " года:");
-        boolean found = false;
-        for (int i = 0; i < count; i++) {
-            if (students[i].getBirthYear() > year) {
-                System.out.println("  " + students[i].getLastName() + " " +
-                        students[i].getFirstName() + " (" +
-                        students[i].getBirthYear() + " г.)");
-                found = true;
-            }
-        }
-        if (!found) {
+        List<Student> filtered = students.stream()
+                .filter(s -> s.getBirthYear() > year).toList();
+
+        if (filtered.isEmpty()) {
             System.out.println("  Студенты не найдены");
+            return;
         }
+        filtered.forEach(s -> System.out.println(s));
     }
 
     // d) список учебной группы
     public void printByGroup(String group) {
         System.out.println("\nСтуденты группы " + group + ":");
-        boolean found = false;
-        for (int i = 0; i < count; i++) {
-            if (students[i].getGroup().equalsIgnoreCase(group)) {
-                System.out.println("  " + students[i].getLastName() + " " +
-                        students[i].getFirstName());
-                found = true;
-            }
-        }
-        if (!found) {
+        List<Student> filtered = students.stream()
+                .filter(s -> s.getGroup().equalsIgnoreCase(group)).toList();
+
+        if (filtered.isEmpty()) {
             System.out.println("  Студенты не найдены");
+            return;
         }
+        filtered.forEach(s -> System.out.println(s));
     }
 }
 
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        StudentManager manager = new StudentManager();
 
-        StudentManager manager = new StudentManager(5);
-
+        // Добавление студентов с полной информацией
         manager.addStudent(new Student(1, "Иванов", "Иван", "Иванович",
-                2000, "ул. Ленина 1", "123-45-67",
-                "ФКНТ", 4, "Б752"));
+                2000, "ул. Ленина 1, кв. 10", "+7(123)456-78-90", "ФКНТ", 4, "Б752"));
 
         manager.addStudent(new Student(2, "Петров", "Петр", "Петрович",
-                2001, "ул. Ленина 2", "234-56-78",
-                "ФКНТ", 3, "Б763-2"));
+                2001, "ул. Гагарина 5, кв. 25", "+7(234)567-89-01", "ФКНТ", 3, "Б763-2"));
 
         manager.addStudent(new Student(3, "Зайцева", "Анна", "Сергеевна",
-                2002, "ул. Ленина 3", "345-67-89",
-                "Экономика", 2, "Б544"));
+                2002, "ул. Пушкина 10, кв. 42", "+7(345)678-90-12", "Экономика", 2, "Б544"));
 
         Student s4 = new Student(4, "Смирнова", "Дарья", "Александровна");
         s4.setBirthYear(2002);
         s4.setFaculty("Экономика");
         s4.setCourse(2);
         s4.setGroup("Б544");
+        s4.setAddress("ул. Лермонтова 15, кв. 7");
+        s4.setPhone("+7(456)789-01-23");
         manager.addStudent(s4);
 
         Student s5 = new Student();
@@ -234,6 +187,8 @@ public class Main {
         s5.setFaculty("ФКНТ");
         s5.setCourse(1);
         s5.setGroup("Б765-1");
+        s5.setAddress("ул. Мира 20, кв. 15");
+        s5.setPhone("+7(567)890-12-34");
         manager.addStudent(s5);
 
         // menu
