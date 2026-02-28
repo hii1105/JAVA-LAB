@@ -1,14 +1,18 @@
 package flower;
 
-import java.util.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Flower {
-    private String name;           // название цветка
-    private double price;           // цена
-    private String color;           // цвет
-    private int freshness;          // свежесть (1-10, где 10 - самая свежая)
-    private double stemLength;      // длина стебля в см
+    protected String name;// название цветка
+    protected double price; // цена
+    protected String color;// цвет
+    protected int freshness;// свежесть (1-10, где 10 - самая свежая)
+    protected double stemLength;// длина стебля в см
 
     public Flower(String name, double price, String color, int freshness, double stemLength) {
         this.name = name;
@@ -18,7 +22,6 @@ public class Flower {
         this.stemLength = stemLength;
     }
 
-    //конструктор для чтения цветов из файла
     public static List<Flower> loadFromFile(String filename) {
         List<Flower> flowers = new ArrayList<>();
 
@@ -35,10 +38,20 @@ public class Flower {
                     int freshness = Integer.parseInt(parts[3].trim());
                     double stemLength = Double.parseDouble(parts[4].trim());
 
-                    flowers.add(new Flower(name, price, color, freshness, stemLength));
+                    Flower flower;
+                    if (name.toLowerCase().contains("роза")) {
+                        flower = new Rose(name, price, color, freshness, stemLength);
+                    } else if (name.toLowerCase().contains("тюльпан")) {
+                        flower = new Tulip(name, price, color, freshness, stemLength);
+                    } else if (name.toLowerCase().contains("лилия")) {
+                        flower = new Lily(name, price, color, freshness, stemLength);
+                    } else {
+                        flower = new Flower(name, price, color, freshness, stemLength);
+                    }
+
+                    flowers.add(flower);
                 }
             }
-            System.out.println("Загружено " + flowers.size() + " цветов из файла " + filename);
         } catch (FileNotFoundException e) {
             System.out.println("Файл не найден: " + filename);
         } catch (IOException e) {
@@ -50,42 +63,11 @@ public class Flower {
         return flowers;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public int getFreshness() {
-        return freshness;
-    }
-
-    public double getStemLength() {
-        return stemLength;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Flower flower = (Flower) o;
-        return Double.compare(flower.price, price) == 0 &&
-                freshness == flower.freshness &&
-                Double.compare(flower.stemLength, stemLength) == 0 &&
-                Objects.equals(name, flower.name) &&
-                Objects.equals(color, flower.color);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, price, color, freshness, stemLength);
-    }
+    public String getName() { return name; }
+    public double getPrice() { return price; }
+    public String getColor() { return color; }
+    public int getFreshness() { return freshness; }
+    public double getStemLength() { return stemLength; }
 
     @Override
     public String toString() {
@@ -93,3 +75,4 @@ public class Flower {
                 name, price, color, freshness, stemLength);
     }
 }
+

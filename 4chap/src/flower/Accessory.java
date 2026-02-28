@@ -28,7 +28,6 @@ public class Accessory {
                     accessories.add(new Accessory(name, price));
                 }
             }
-            System.out.println("Загружено " + accessories.size() + " аксессуаров из файла " + filename);
         } catch (FileNotFoundException e) {
             System.out.println("Файл не найден: " + filename);
         } catch (IOException e) {
