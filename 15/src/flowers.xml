@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flower xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="flower.xsd">
+    <Plant id="p1">
+        <Name>Роза</Name>
+        <Soil>грунтовая</Soil>
+        <Origin>Европа</Origin>
+        <VisualParameters>
+            <StemColor>зелёный</StemColor>
+            <LeafColor>тёмно-зелёный</LeafColor>
+            <AverageSize>60</AverageSize>
+        </VisualParameters>
+        <GrowingTips>
+            <Temperature>20</Temperature>
+            <Light>true</Light>
+            <Watering>300</Watering>
+        </GrowingTips>
+        <Multiplying>черенками</Multiplying>
+    </Plant>
+    <Plant id="p2">
+        <Name>Кактус</Name>
+        <Soil>подзолистая</Soil>
+        <Origin>Америка</Origin>
+        <VisualParameters>
+            <StemColor>зелёный</StemColor>
+            <LeafColor>отсутствуют</LeafColor>
+            <AverageSize>30</AverageSize>
+        </VisualParameters>
+        <GrowingTips>
+            <Temperature>25</Temperature>
+            <Light>true</Light>
+            <Watering>100</Watering>
+        </GrowingTips>
+        <Multiplying>семенами</Multiplying>
+    </Plant>
+    <Plant id="p3">
+        <Name>Папоротник</Name>
+        <Soil>дерново-подзолистая</Soil>
+        <Origin>Тропики</Origin>
+        <VisualParameters>
+            <StemColor>светло-зелёный</StemColor>
+            <LeafColor>зелёный</LeafColor>
+            <AverageSize>45</AverageSize>
+        </VisualParameters>
+        <GrowingTips>
+            <Temperature>18</Temperature>
+            <Light>false</Light>
+            <Watering>400</Watering>
+        </GrowingTips>
+        <Multiplying>листьями</Multiplying>
+    </Plant>
+</Flower>
